@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocktail Generator</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Cocktail Generator</h1>
+    <div class="container">
+        <form id="myForm" method="get">
+          <input type="text" id="search" name="search">
+          <input id="get" type="submit" value="Search by Name" formaction="/name">
+          <input id="get" type="submit" value="Lookup Ingredient" formaction="/ingredient">
+          <input id="get" type="submit" value="Random Cocktail" formaction="/random">
+        </form>
+    </div>
+    <div id="content">
+        <% if (locals.content) { %>
+            <% for (let idx = 0; idx < content.length; idx++) { %>
+            <div class="card">
+                <h2><%= content[idx].strDrink %></h2>
+                <img src=<%= content[idx].strDrinkThumb + '/preview' %> alt="Cocktail photo">
+                <p><%= content[idx].strAlcoholic %>, <%= content[idx].strGlass %></p>
+                <h3>Ingredients:</h3>
+                <% let i = 1 %>
+                <% while (content[idx][`strIngredient${i}`] != null) { %>
+                    <p><%= content[idx][`strMeasure${i}`] %><%= content[idx][`strIngredient${i}`] %></p>
+                    <br>
+                    <% i++ %>
+                <% } %>
+                <br>
+                <div class="instructions">
+                    <%= content[idx].strInstructions %>
+                </div>
+            </div>
+            <% } %>
+        <% } else if (locals.ingredient) { %>
+            <div class="card">
+                <h2><%= ingredient.strIngredient %></h2>
+                <p><%= ingredient.strTypeAlcohol %></p>
+                <p><%= ingredient.strDescription %></p>
+            </div>
+        <% } else if (locals.errorMsg) { %>
+            <div class="error"><%= errorMsg %><div>
+        <% } else { %>
+            <p>Use the form below to find a cocktail you'd like to make!</p>
+        <% } %>
+    </div>
+    
+</body>
+</html>

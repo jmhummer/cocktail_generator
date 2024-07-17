@@ -1,30 +1,50 @@
-// HINTS:
-// 1. Import express and axios
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
 
 
-// 2. Create an express app and set the port number.
 const app = express();
 const port = 3000;
 const API_URL = "https://www.thecocktaildb.com/api/json/v1/1/";
 
-// 3. Use the public folder for static files.
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// 4. When the user goes to the home page it should render the index.ejs file.
+//Home page
 app.get("/", async (req, res) => {
-    try {
-        const result = await axios.get(API_URL);
-        res.render("index.ejs", { });
-    } catch (error) {
-        // res.render("index.ejs", { content: JSON.stringify(error.response.data) });
-        console.log(error.response.data);
-        res.status(500);
-    }
+    res.render("index.ejs");
 })
+
+app.get("/name", async (req, res) => {
+    try {
+        const result = await axios.get(API_URL + `search.php?s=${req.query.search}`);
+
+        if (result.data.drinks == null) {
+            res.render("index.ejs", { errorMsg: "Cocktail not found"});
+        } else {
+            res.render("index.ejs", { content: result.data.drinks});
+        }
+    } catch (error) {
+        res.render("index.ejs", { errorMsg: "Cocktail search error"});
+    }
+});
+
+app.get("/random", async (req, res) => {
+    try {
+        const result = await axios.get(API_URL + `random.php`);
+        res.render("index.ejs", { content: result.data.drinks});
+    } catch (error) {
+        res.render("index.ejs", { errorMsg: "Random generator issue"});
+    }
+});
+app.get("/ingredient", async (req, res) => {
+    try {
+        const result = await axios.get(API_URL + `search.php?i=${req.query.search}`);
+        res.render("index.ejs", { ingredient: result.data.ingredients[0]});
+    } catch (error) {
+        res.render("index.ejs", { errorMsg: "Ingredient not found"});
+    }
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
